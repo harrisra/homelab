@@ -63,8 +63,8 @@ get_config() {
   echo ""
   [[ -n "$CT_PASSWORD" ]] || error "Password cannot be empty."
 
-  read -rp "CPU cores [4]: " CT_CORES
-  CT_CORES="${CT_CORES:-4}"
+  read -rp "CPU cores [8]: " CT_CORES
+  CT_CORES="${CT_CORES:-8}"
 
   read -rp "RAM in MB [10240]: " CT_RAM
   CT_RAM="${CT_RAM:-10240}"
@@ -87,8 +87,8 @@ get_config() {
     [[ -n "$CT_GW" ]] || error "Gateway is required for static IP."
   fi
 
-  read -rp "DNS server [1.1.1.1]: " CT_DNS
-  CT_DNS="${CT_DNS:-1.1.1.1}"
+  read -rp "DNS server [192.168.1.1]: " CT_DNS
+  CT_DNS="${CT_DNS:-192.168.1.1}"
 
   # SSH key (optional)
   read -rp "Path to SSH public key (optional, press Enter to skip): " CT_SSH_KEY
