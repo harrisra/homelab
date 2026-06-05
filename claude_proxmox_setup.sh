@@ -2,12 +2,12 @@
 #!/usr/bin/env bash
 # ============================================================================
 #  Claude Code LXC Deployer for Proxmox
-#  Creates a fully provisioned Ubuntu 26.04 LXC container ready for Claude Code
+#  Creates a fully provisioned Ubuntu 24.04 LXC container ready for Claude Code
 #
 #  Run on your Proxmox host:
-#    curl -fsSL https://raw.githubusercontent.com/serversathome/ServersatHome/main/agentic.sh -o /tmp/agentic.sh && bash /tmp/agentic.sh
+#    curl -fsSL https://raw.githubusercontent.com/harrisra/homelab/refs/heads/main/claude_proxmox_setup.sh -o /tmp/agentic.sh && bash /tmp/agentic.sh
 #
-#  GitHub: https://github.com/serversathome/ServersatHome
+#  This is a modified version of the script found at https://github.com/serversathome/ServersatHome
 # ============================================================================
 
 set -euo pipefail
@@ -77,7 +77,7 @@ get_config() {
   CT_DISK="${CT_DISK:-30}"
 
   read -rp "Storage [local-lvm]: " CT_STORAGE
-  CT_STORAGE="${CT_STORAGE:-truenas-lvm}"
+  CT_STORAGE="${CT_STORAGE:-local-lvm}"
 
   # Network - default DHCP
   read -rp "IP address (DHCP or x.x.x.x/xx) [dhcp]: " CT_IP
