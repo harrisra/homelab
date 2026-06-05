@@ -489,7 +489,7 @@ services:
     container_name: watchtower
     restart: unless-stopped
     environment:
-      TZ: America/New_York
+      TZ: Europe/London
       WATCHTOWER_CLEANUP: "true"
       WATCHTOWER_INCLUDE_STOPPED: "true"
       WATCHTOWER_SCHEDULE: "0 0 4 * * *"
@@ -509,8 +509,9 @@ services:
     environment:
       PUID: "0"
       PGID: "0"
-      TZ: America/New_York
+      TZ: Europe/London
       PASSWORD: admin
+      PATH: "/config/workspace/usr/local/bin:/config/workspace/root/.local/bin:/config/workspace/root/.claude/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     volumes:
       - ./config:/config
       - /:/config/workspace
