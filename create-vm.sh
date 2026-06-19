@@ -6,6 +6,9 @@
 # that's an LXC/pct-only concept — so swap is created inside the guest OS
 # via a cloud-init snippet on first boot).
 #
+# SSH key defaults to fetching the public key from the harrisra/homelab repo
+# on GitHub (raw.githubusercontent.com over HTTPS); a local path also works.
+#
 # Run on your Proxmox host:
 #   bash create-vm.sh
 # ============================================================================
@@ -38,6 +41,7 @@ preflight() {
   [[ $(id -u) -eq 0 ]] || error "This script must be run as root on the Proxmox host."
   command -v qm    &>/dev/null || error "qm not found. Are you running this on a Proxmox host?"
   command -v wget  &>/dev/null || error "wget not found."
+  command -v curl  &>/dev/null || error "curl not found."
 }
 
 # ── Snippets storage check ─────────────────────────────────────────────────
@@ -106,9 +110,21 @@ get_config() {
   read -rp "Cloud-init user [harrisra]: " VM_USER
   VM_USER="${VM_USER:-harrisra}"
 
-  read -rp "Path to SSH public key [$HOME/.ssh/id_ed25519.pub]: " VM_SSHKEY
-  VM_SSHKEY="${VM_SSHKEY:-$HOME/.ssh/id_ed25519.pub}"
+  local sshkey_default="https://raw.githubusercontent.com/harrisra/homelab/main/id_ed25519.pub"
+  read -rp "SSH public key (local path or URL) [$sshkey_default]: " VM_SSHKEY_SRC
+  VM_SSHKEY_SRC="${VM_SSHKEY_SRC:-$sshkey_default}"
+
+  if [[ "$VM_SSHKEY_SRC" =~ ^https?:// ]]; then
+    VM_SSHKEY="/tmp/create-vm-${VM_ID}-id_ed25519.pub"
+    info "Fetching SSH public key from $VM_SSHKEY_SRC..."
+    curl -fsSL "$VM_SSHKEY_SRC" -o "$VM_SSHKEY" || error "Failed to download SSH public key from $VM_SSHKEY_SRC"
+  else
+    VM_SSHKEY="$VM_SSHKEY_SRC"
+  fi
+
   [[ -f "$VM_SSHKEY" ]] || error "SSH public key not found at $VM_SSHKEY"
+  grep -qE '^(ssh-(rsa|ed25519|dss)|ecdsa-sha2-)' "$VM_SSHKEY" \
+    || error "File at $VM_SSHKEY doesn't look like a valid SSH public key."
 
   read -rsp "Cloud-init user password (optional, press Enter for key-only auth): " VM_PASSWORD
   echo ""
